@@ -10,6 +10,7 @@ alembic = "*"
 marshmallow = "*"
 "ruamel.yaml" = "*"
 mysqlclient = "*"
+pytz = "*"
 
 [dev-packages]
 pytest = "*"
