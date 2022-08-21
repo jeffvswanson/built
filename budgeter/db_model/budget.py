@@ -4,7 +4,7 @@ Table definition for MySQL budget table.
 
 import sqlalchemy.dialects.mysql as mysql
 from sqlalchemy import Column
-from budgeter.dbschema import Base, UUID_LENGTH
+from budgeter.db_model import Base, UUID_LENGTH
 
 
 class Budget(Base):

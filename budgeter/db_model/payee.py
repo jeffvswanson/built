@@ -5,7 +5,7 @@ Payee can include payor or payee, I can't think of a better entity name.
 
 import sqlalchemy.dialects.mysql as mysql
 from sqlalchemy import Column
-from budgeter.dbschema import Base, UUID_LENGTH
+from budgeter.db_model import Base, UUID_LENGTH
 
 
 class Payee(Base):
