@@ -11,7 +11,9 @@ from budgeter.db_model import Base, UUID_LENGTH
 class Payee(Base):
     __tablename__ = "payee"
 
-    id = Column(mysql.VARCHAR(length=UUID_LENGTH), primary_key=True, nullable=False, unique=True)
+    id = Column(
+        mysql.VARCHAR(length=UUID_LENGTH), primary_key=True, nullable=False, unique=True
+    )
     name = Column(mysql.VARCHAR(length=200), nullable=False)
     e_mail = Column(mysql.VARCHAR(length=200), nullable=False)
     phone = Column(mysql.VARCHAR(length=15), nullable=False)

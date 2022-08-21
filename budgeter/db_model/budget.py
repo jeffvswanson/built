@@ -10,7 +10,12 @@ from budgeter.db_model import Base, UUID_LENGTH
 class Budget(Base):
     __tablename__ = "budget"
 
-    id = Column(mysql.INTEGER(unsigned=True), primary_key=True, nullable=False, autoincrement="auto")
+    id = Column(
+        mysql.INTEGER(unsigned=True),
+        primary_key=True,
+        nullable=False,
+        autoincrement="auto",
+    )
     item = Column(mysql.VARCHAR(length=200), nullable=False)
     dollars = Column(mysql.BIGINT(unsigned=True))
     cents = Column(mysql.TINYINT(unsigned=True))

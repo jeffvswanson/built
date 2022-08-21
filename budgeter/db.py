@@ -6,13 +6,13 @@ import sqlalchemy
 from flask import Flask, g
 from sqlalchemy.exc import NoResultFound
 
-from budgeter.dbschema.budget import Budget
-from budgeter.dbschema.payee import Payee
+from budgeter.db_model.budget import Budget
+from budgeter.db_model.payee import Payee
 
 
 def get_db():
-    if 'db' not in g:
-        engine = sqlalchemy.create_engine('SQLALCHEMY_DATABASE_URI', future=True)
+    if "db" not in g:
+        engine = sqlalchemy.create_engine("SQLALCHEMY_DATABASE_URI", future=True)
         with engine.connect() as conn:
             response = conn.execute(sqlalchemy.text("SELECT 'hello, budgeter'"))
             if not response:
@@ -23,7 +23,7 @@ def get_db():
 
 
 def close_db(e=None):
-    db = g.pop('db', None)
+    db = g.pop("db", None)
     if db is not None:
         db.close()
 

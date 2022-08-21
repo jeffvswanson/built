@@ -8,13 +8,38 @@ from marshmallow import Schema, fields, validate, pre_load
 class BudgetItem(Schema):
     id = fields.Int(dump_only=True)
     item = fields.Str(required=True, allow_none=False)
-    dollars = fields.Int(strict=True, default=0, validate=validate.Range(min=0, min_inclusive=True, error="Value must be an integer, 0 or greater."))
-    cents = fields.Int(strict=True, default=0, validate=validate.Range(min=0, max=99, min_inclusive=True, max_inclusive=True, error="Value must be an integer between 0 and 99."))
-    flow = fields.Str(default="-", validate=validate.OneOf(choices=['+', '-'], labels=['Inflow', 'Outflow'], error="Only inflow, '+', or outflow, '-', permitted."))
+    dollars = fields.Int(
+        strict=True,
+        default=0,
+        validate=validate.Range(
+            min=0, min_inclusive=True, error="Value must be an integer, 0 or greater."
+        ),
+    )
+    cents = fields.Int(
+        strict=True,
+        default=0,
+        validate=validate.Range(
+            min=0,
+            max=99,
+            min_inclusive=True,
+            max_inclusive=True,
+            error="Value must be an integer between 0 and 99.",
+        ),
+    )
+    flow = fields.Str(
+        default="-",
+        validate=validate.OneOf(
+            choices=["+", "-"],
+            labels=["Inflow", "Outflow"],
+            error="Only inflow, '+', or outflow, '-', permitted.",
+        ),
+    )
 
     payor = fields.Str(required=True, allow_none=False)
     payee = fields.Str(required=True, allow_none=False)
-    transaction_date = fields.AwareDateTime(format="iso", default_timezone=pytz.UTC, required=True, allow_none=False)
+    transaction_date = fields.AwareDateTime(
+        format="iso", default_timezone=pytz.UTC, required=True, allow_none=False
+    )
 
     @pre_load
     def find_payee_ids(self, data, **kwargs):
