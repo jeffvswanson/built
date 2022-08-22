@@ -5,7 +5,7 @@ Defines the request schema for a payee/payor entity.
 from marshmallow import Schema, fields, validate
 
 
-class Payee(Schema):
+class PayeeSchema(Schema):
     id = fields.UUID(dump_only=True)
     name = fields.Str(required=True)
     e_mail = fields.Email(

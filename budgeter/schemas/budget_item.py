@@ -1,11 +1,13 @@
 """
 Defines the request schema for a budget item.
 """
+import datetime
+
 import pytz
 from marshmallow import Schema, fields, validate, pre_load
 
 
-class BudgetItem(Schema):
+class BudgetItemSchema(Schema):
     id = fields.Int(dump_only=True)
     item = fields.Str(required=True, allow_none=False)
     dollars = fields.Int(
@@ -38,15 +40,21 @@ class BudgetItem(Schema):
     payor = fields.Str(required=True, allow_none=False)
     payee = fields.Str(required=True, allow_none=False)
     transaction_date = fields.AwareDateTime(
-        format="iso", default_timezone=pytz.UTC, required=True, allow_none=False
+        format="iso", default_timezone=pytz.UTC, required=True, allow_none=False, dump_default=datetime.datetime.now(pytz.UTC).isoformat()
     )
 
     @pre_load
-    def find_payee_ids(self, data, **kwargs):
+    def find_payee_ids(self, data, **kwargs) -> dict:
         """
         find_payee_ids attempts to match the provided payor/payee names with an existing
         value in the payee database table. If the name(s) cannot be found, then the
         payor/payee names get added to the payee database table.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the attribute names of BudgetItemSchema as keys with
+            its attribute values as the values.
         """
         payor_id, payee_id = None, None
         payor = data.pop("payor")
