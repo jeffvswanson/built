@@ -40,7 +40,11 @@ class BudgetItemSchema(Schema):
     payor = fields.Str(required=True, allow_none=False)
     payee = fields.Str(required=True, allow_none=False)
     transaction_date = fields.AwareDateTime(
-        format="iso", default_timezone=pytz.UTC, required=True, allow_none=False, dump_default=datetime.datetime.now(pytz.UTC).isoformat()
+        format="iso",
+        default_timezone=pytz.UTC,
+        required=True,
+        allow_none=False,
+        dump_default=datetime.datetime.now(pytz.UTC).isoformat(),
     )
 
     @pre_load

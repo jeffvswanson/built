@@ -2,6 +2,7 @@
 Utility functions to work with the Built budget API.
 """
 
+from enum import Enum
 from typing import Optional
 
 from marshmallow import Schema, ValidationError
@@ -26,7 +27,7 @@ def parse_json(*, json_data: Optional[dict], schema: Schema) -> dict:
     """
     if not json_data:
         abort(BadRequest.code, "No input data provided.")
-        
+
     try:
         data = schema.load(json_data)
     except ValidationError as exc:
