@@ -1,26 +1,26 @@
 FROM docker.io/python:3.9.13 AS builder
 
-RUN pip install --user pipenv
+RUN pip install pipenv
 
 # Default venv directory in project directory
 ENV PIPENV_VENV_IN_PROJECT=1
 
-ADD Pipfile.lock Pipfile /built/
+WORKDIR /built
+
+ADD Pipfile.lock Pipfile ./
+
+RUN pipenv sync
+
+RUN pipenv run python -c "import sqlalchemy; print(sqlalchemy.__version__)"
+
+FROM docker.io/python:3.9.13-slim-buster AS runtime
 
 WORKDIR /built
 
-RUN /root/.local/bin/pipenv sync
+COPY --from=builder /built/.venv/ ./venv
 
-RUN /built/.venv/python -c "import sqlalchemy; print(sqlalchemy.__version__)"
+COPY ./budgeter ./budgeter
 
-FROM docker.io/python:3.9.13 AS runtime
+RUN ./venv/bin/python -c "import sqlalchemy; print(sqlalchemy.__version__)"
 
-RUN mkdir -v /built/venv
-
-COPY --from=build /built/.venv/ /built/venv
-
-RUN /built/venv/bin/python -c "import sqlalchemy; print(sqlalchemy.__version__)"
-
-WORKDIR /built/
-
-CMD ["flask --app budgeter"]
+CMD ["./venv/bin/python", "-m", "flask", "--app", "budgeter", "run", "--host=0.0.0.0"]
