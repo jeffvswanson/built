@@ -1,35 +1,18 @@
 version: '3.8'
 
 services:
-  # budgeter:
-  #   build: .
-  #   ports:
-  #    - "8000:4566"
-  #   depends_on:
-  #     - db
-  #     - localstack
-  #   environment:
-  #     - MYSQL_USER=dev
-  #     - MYSQL_PASSWORD=none
-  #   entrypoint:
-  #     - bash
-  #     - -c
-  #     - |
-  #       set -e
-  #       echo '################################################'
-  #       echo 'Waiting for MySQL and localstack to be available'
-  #       export MYSQL_USER="$$MYSQL_USER"
-  #       export MYSQL_PASSWORD="$$MYSQL_PASSWORD"
-  #       maxTries=10
-  #       while [ "$$maxTries" -gt 0 ] && ! mysql --user=$MYSQL_USER --password=$MYSQL_PASSWORD --silent --execute "SELECT 1;" do
-  #         sleep 1
-  #       done
-  #       echo
-  #       if [ "$$maxTries -le 0"]; then
-  #         echo >&2 'error: unable to conect to MySQL after 10 tries'
-  #         exit 1
-  #       fi
-  #   container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+  budgeter:
+    build: .
+    ports:
+     - "5000:5000"
+    depends_on:
+      - db
+      # - localstack
+    links:
+      - db
+    environment:
+      - MYSQL_USER=dev
+      - MYSQL_PASSWORD=none
   # localstack:
   #   image: localstack/localstack:latest
   #   ports:
@@ -55,14 +38,11 @@ services:
     ports:
       - "31000:3306"
     restart: always
+    volumes:
+      - ./db-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: budgetdb
-    # healthcheck:
-    #   test: mysql ${MYSQL_DATABASE} --user=${MYSQL_USER} --password='${MYSQL_PASSWORD}' --silent --execute "SELECT 1;"
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 5   
+      MYSQL_DATABASE: db
 
   adminer:
     image: adminer
