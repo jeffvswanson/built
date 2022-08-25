@@ -15,6 +15,8 @@ RUN pipenv run python -c "import sqlalchemy; print(sqlalchemy.__version__)"
 
 FROM docker.io/python:3.9.13-slim-buster AS runtime
 
+RUN apt-get update && apt-get install -y python3-dev default-libmysqlclient-dev build-essential
+
 WORKDIR /built
 
 COPY --from=builder /built/.venv/ ./venv

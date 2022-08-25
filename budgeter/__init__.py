@@ -8,10 +8,6 @@ from ruamel.yaml import YAML
 
 def create_app(*, test_config: Optional[Path] = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY="dev",
-        DATABASE=Path(os.path.join(app.instance_path, "budgeter.sqlite")),
-    )
     yaml = YAML(typ="safe")
 
     if test_config:
@@ -35,8 +31,11 @@ def create_app(*, test_config: Optional[Path] = None) -> Flask:
 
     db.init_app(app)
 
-    # from . import budget
-    # app.register_blueprint(budget.bp)
-    # app.add_url_rule('/', endpoint='index')
+    from . import budget
+    app.register_blueprint(budget.bp)
+    app.add_url_rule('/', endpoint='index', view_func=budget.budget_view)
+
+    from . import payee
+    app.register_blueprint(payee.bp)
 
     return app

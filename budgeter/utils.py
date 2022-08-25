@@ -2,7 +2,6 @@
 Utility functions to work with the Built budget API.
 """
 
-from enum import Enum
 from typing import Optional
 
 from marshmallow import Schema, ValidationError

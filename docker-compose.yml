@@ -11,8 +11,10 @@ services:
     links:
       - db
     environment:
-      - MYSQL_USER=dev
-      - MYSQL_PASSWORD=none
+      MYSQL_USER: dev  # Ensure these match the values in the db service
+      MYSQL_PASSWORD: none
+      MYSQL_DB: db
+      MYSQL_PORT: 31000
   # localstack:
   #   image: localstack/localstack:latest
   #   ports:
@@ -43,6 +45,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: db
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: none
 
   adminer:
     image: adminer

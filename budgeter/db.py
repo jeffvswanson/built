@@ -5,16 +5,19 @@ Manages the database instance for the Built Budget API.
 import time
 
 import sqlalchemy
-from flask import Flask, g
+from flask import Flask, current_app, g
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.engine import Engine
 
 from budgeter.db_model.budget import Budget
 from budgeter.db_model.payee import Payee
 
 
-def get_db():
+def get_db() -> Engine:
     if "db" not in g:
-        engine = sqlalchemy.create_engine("SQLALCHEMY_DATABASE_URI", future=True)
+        engine = sqlalchemy.create_engine(
+            current_app.config["SQLALCHEMY_DATABASE_URI"], future=True
+        )
         with engine.connect() as conn:
             connection_attempts = 0
             print("Attempting to connect to MySQL database...")
@@ -35,15 +38,14 @@ def get_db():
                         "MySQL database connection could not be established. Waiting..."
                     )
                     time.sleep(1)
-
-            g.db = conn
-            return g.db
+        g.db = engine
+    return g.db
 
 
 def close_db(e=None):
     db = g.pop("db", None)
     if db is not None:
-        db.close()
+        del db
 
 
 def init_db():
