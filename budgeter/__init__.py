@@ -4,7 +4,7 @@ from typing import Optional
 
 from flask import Flask
 from ruamel.yaml import YAML
-
+from . import db
 
 def create_app(*, test_config: Optional[Path] = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
@@ -14,7 +14,7 @@ def create_app(*, test_config: Optional[Path] = None) -> Flask:
         mapping = yaml.load(Path(test_config))
         app.config.from_mapping(mapping)
     else:
-        mapping = yaml.load(Path(os.path.join(Path.cwd(), "budgeter", "config.yaml")))
+        mapping = yaml.load(Path(os.path.join(Path.cwd(), "config.yaml")))
         app.config.from_mapping(mapping)
 
     try:

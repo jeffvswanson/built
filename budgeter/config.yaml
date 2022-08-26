@@ -1,3 +1,4 @@
 # Required for budgeter application deployment.
+# Used on docker compose network.
 
 SQLALCHEMY_DATABASE_URI: "mysql+mysqldb://root:example@db:3306/db"
