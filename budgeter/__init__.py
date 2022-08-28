@@ -14,7 +14,7 @@ def create_app(*, test_config: Optional[Path] = None) -> Flask:
         mapping = yaml.load(Path(test_config))
         app.config.from_mapping(mapping)
     else:
-        mapping = yaml.load(Path(os.path.join(Path.cwd(), "config.yaml")))
+        mapping = yaml.load(Path(os.path.join(Path.cwd(), "budgeter", "config.yaml")))
         app.config.from_mapping(mapping)
 
     try:

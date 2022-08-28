@@ -31,11 +31,17 @@ def budget_view() -> Tuple[int, dict]:
         budget = conn.execute(
             sqlalchemy.text(
                 "SELECT"
-                " item, dollars, cents, flow, p.payor_name, p.payee_name, "
-                " transaction_date"
-                " FROM budget b"
-                " JOIN p.payor_name ON b.payor_id = p.id"
-                " AND p.payee_name ON b.payee_id = p.id"
+                " budget.item AS item,"
+                " budget.dollars AS dollars,"
+                " budget.cents AS cents,"
+                " budget.flow AS flow,"
+                " payee.payor_name AS payor_name,"
+                " payee.payee_name AS payee_name,"
+                " budget.transaction_date AS transaction_date,"
+                " budget.date_modified AS date_modified "
+                "FROM budget, payee "
+                "INNER JOIN payee.payor_name ON budget.payor_id = payee.id"
+                "INNER JOIN payee.payee_name ON budget.payee_id = payee.id"
             )
         ).fetchall()
         return HTTPStatus.OK, {bp.name: budget}
