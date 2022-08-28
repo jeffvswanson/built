@@ -6,6 +6,7 @@ from flask import Flask
 from ruamel.yaml import YAML
 from . import db
 
+
 def create_app(*, test_config: Optional[Path] = None) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
     yaml = YAML(typ="safe")
@@ -32,10 +33,12 @@ def create_app(*, test_config: Optional[Path] = None) -> Flask:
     db.init_app(app)
 
     from . import budget
+
     app.register_blueprint(budget.bp)
-    app.add_url_rule('/', endpoint='index', view_func=budget.budget_view)
+    app.add_url_rule("/", endpoint="index", view_func=budget.budget_view)
 
     from . import payee
+
     app.register_blueprint(payee.bp)
 
     return app

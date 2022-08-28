@@ -5,7 +5,6 @@ table.
 
 import datetime
 from http import HTTPStatus
-from typing import Tuple
 
 import pytz
 import sqlalchemy
@@ -25,30 +24,15 @@ payee_table = Payee()
 
 
 @bp.route("/")
-def budget_view() -> Tuple[int, dict]:
+def budget_view() -> dict:
     db = budgeter_db.get_db()
     with db.connect() as conn:
-        budget = conn.execute(
-            sqlalchemy.text(
-                "SELECT"
-                " budget.item AS item,"
-                " budget.dollars AS dollars,"
-                " budget.cents AS cents,"
-                " budget.flow AS flow,"
-                " payee.payor_name AS payor_name,"
-                " payee.payee_name AS payee_name,"
-                " budget.transaction_date AS transaction_date,"
-                " budget.date_modified AS date_modified "
-                "FROM budget, payee "
-                "INNER JOIN payee.payor_name ON budget.payor_id = payee.id"
-                "INNER JOIN payee.payee_name ON budget.payee_id = payee.id"
-            )
-        ).fetchall()
-        return HTTPStatus.OK, {bp.name: budget}
+        budget = conn.execute(sqlalchemy.select(Budget)).fetchall()
+        return {"status": HTTPStatus.OK, "result": {bp.name: budget}}
 
 
 @bp.route("/items/", methods=("GET", "POST"))
-def create() -> Tuple[int, dict]:
+def create() -> dict:
     if request.method == "POST":
         data = utils.parse_json(json_data=request.get_json(), schema=BudgetItemSchema())
 
@@ -66,15 +50,18 @@ def create() -> Tuple[int, dict]:
             )
             result = db.execute(query)
             conn.commit()
-            return HTTPStatus.CREATED, {
-                "message": "Created new budget item.",
-                "key": result.inserted_primary_key[0],
+            return {
+                "status": HTTPStatus.CREATED,
+                "result": {
+                    "message": "Created new budget item.",
+                    "key": result.inserted_primary_key[0],
+                },
             }
     elif request.method == "GET":
         return budget_view()
 
 
-def get_budget_item(id: int) -> Tuple[int, dict]:
+def get_budget_item(id: int) -> dict:
     """
     get_budget_item retrieves a single row from a database representing a budget row.
 
@@ -85,39 +72,41 @@ def get_budget_item(id: int) -> Tuple[int, dict]:
 
     Returns
     -------
-    Tuple[int, dict]
+    dict
         The HTTP status code and the query result for a single budget item.
     """
     db = budgeter_db.get_db()
     with db.connect() as conn:
-        item = conn.execute(
-            "SELECT"
-            "item, dollars, cents, flow, p.payor_name, p.payee_name, transaction_date"
-            " FROM budget b"
-            " JOIN p.payor_name ON b.payor_id = p.id"
-            " AND p.payee_name ON b.payee_id = p.id"
-            " WHERE b.id = ?",
-            (id,),
-        ).fetchone()
+        item = conn.execute(sqlalchemy.select(Budget).where(Budget.id == id)).fetchone()
         if item is None:
             abort(HTTPStatus.NOT_FOUND, f"Budget item id {id} does not exist.")
-        return HTTPStatus.OK, item
+        return {"status": HTTPStatus.OK, "result": item}
 
 
 @bp.route("/items/<int:id>", methods=("GET", "POST", "DELETE"))
 def update(id: int):
-    get_status_code, get_result = get_budget_item(id)
+    budget_item = get_budget_item(id)
     if request.method == "GET":
-        return get_status_code, get_result
+        return budget_item
 
     db = budgeter_db.get_db()
     if request.method == "POST":
         data = utils.parse_json(json_data=request.get_json(), schema=BudgetItemSchema())
-        dollars = data["dollars"] if data.get("dollars") is None else get_result.dollars
-        cents = data["cents"] if data.get("cents") is None else get_result.cents
-        flow = data["flow"] if data.get("flow") else get_result.flow
-        payor_id = data["payor"] if data.get("payor") else get_result.payor_id
-        payee_id = data["payee"] if data.get("payee") else get_result.payee_id
+        dollars = (
+            data["dollars"]
+            if data.get("dollars") is None
+            else budget_item["result"].dollars
+        )
+        cents = (
+            data["cents"] if data.get("cents") is None else budget_item["result"].cents
+        )
+        flow = data["flow"] if data.get("flow") else budget_item["result"].flow
+        payor_id = (
+            data["payor"] if data.get("payor") else budget_item["result"].payor_id
+        )
+        payee_id = (
+            data["payee"] if data.get("payee") else budget_item["result"].payee_id
+        )
         modified_date = (
             data["transaction_date"]
             if data.get("transaction_date")
@@ -130,7 +119,7 @@ def update(id: int):
                 " payee_id = ?, modified_date = ? "
                 " WHERE id = ?",
                 (
-                    get_result.item,
+                    budget_item["result"].item,
                     dollars,
                     cents,
                     flow,
@@ -141,11 +130,11 @@ def update(id: int):
                 ),
             )
             conn.commit()
-        return HTTPStatus.OK, result
+        return {"status": HTTPStatus.OK, "result": result}
     elif request.method == "DELETE":
-        if get_result:
+        if budget_item["result"]:
             with db.connect() as conn:
                 query = sqlalchemy.delete(budget_table).where(budget_table.id == id)
                 conn.execute(query)
                 conn.commit()
-                return HTTPStatus.NO_CONTENT, {}
+                return {"status": HTTPStatus.NO_CONTENT, "result": {}}

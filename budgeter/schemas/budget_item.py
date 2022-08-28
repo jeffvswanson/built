@@ -2,9 +2,12 @@
 Defines the request schema for a budget item.
 """
 import datetime
+from http import HTTPStatus
 
 import pytz
 from marshmallow import Schema, fields, validate, pre_load
+
+import budgeter.payee
 
 
 class BudgetItemSchema(Schema):
@@ -42,7 +45,6 @@ class BudgetItemSchema(Schema):
     transaction_date = fields.AwareDateTime(
         format="iso",
         default_timezone=pytz.UTC,
-        required=True,
         allow_none=False,
         dump_default=datetime.datetime.now(pytz.UTC).isoformat(),
     )
@@ -60,17 +62,26 @@ class BudgetItemSchema(Schema):
             Dictionary containing the attribute names of BudgetItemSchema as keys with
             its attribute values as the values.
         """
-        payor_id, payee_id = None, None
-        payor = data.pop("payor")
-        # if payor in payee table:
-        #     get and assign payor ID
-        # else:
-        #     update payee table with payor name
-        #     data["payor_id"] = payee.UUID
-        payee = data.pop("payee")
-        # if payee in payee table:
-        #     get and assign payor ID
-        # else:
-        #     update payee table with payee name
-        #     data["payee_id"] = payee.UUID
+
+        if payor := data.get("payor"):
+            result = budgeter.payee.get_by_name(name=payor)
+            if result["status"] == HTTPStatus.NOT_FOUND:
+                resp = budgeter.payee.insert_payee(name=payor, e_mail=None, phone=None)
+                if resp["status"] != HTTPStatus.CREATED:
+                    return {
+                        "status": HTTPStatus.UNPROCESSABLE_ENTITY,
+                        "result": {"message": "Unable to create payor"},
+                    }
+                data["payor"] = resp["result"]["id"]
+
+        if payee := data.get("payee"):
+            result = budgeter.payee.get_by_name(name=payee)
+            if result["status"] == HTTPStatus.NOT_FOUND:
+                resp = budgeter.payee.insert_payee(name=payee, e_mail=None, phone=None)
+                if resp["status"] != HTTPStatus.CREATED:
+                    return {
+                        "status": HTTPStatus.UNPROCESSABLE_ENTITY,
+                        "result": {"message": "Unable to create payee"},
+                    }
+                data["payee"] = resp["result"]["id"]
         return data
