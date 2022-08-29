@@ -130,14 +130,19 @@ def update_by_id(id: str):
         data = utils.parse_json(json_data=payee, schema=PayeeSchema())
         with db.connect() as conn:
             result = conn.execute(
-                sqlalchemy.update(Payee).where(Payee.id == id).values(
+                sqlalchemy.update(Payee)
+                .where(Payee.id == id)
+                .values(
                     name=payee["name"],
                     e_mail=payee["e_mail"],
                     phone=payee["phone"],
                 )
             )
             conn.commit()
-        return {"status": HTTPStatus.OK, "result": PayeeSchema().dump(result.last_updated_params())}
+        return {
+            "status": HTTPStatus.OK,
+            "result": PayeeSchema().dump(result.last_updated_params()),
+        }
     elif request.method == "DELETE":
         if payee["result"]:
             with db.connect() as conn:

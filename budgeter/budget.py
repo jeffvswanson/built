@@ -99,7 +99,9 @@ def update(id: int):
         budget_item["flow"] = data.get("flow", budget_item["flow"])
         budget_item["payor_id"] = data.get("payor", budget_item["payor_id"])
         budget_item["payee_id"] = data.get("payee", budget_item["payee_id"])
-        budget_item["transaction_date"] = data.get("transaction_date", datetime.datetime.now(pytz.UTC).isoformat())
+        budget_item["transaction_date"] = data.get(
+            "transaction_date", datetime.datetime.now(pytz.UTC).isoformat()
+        )
         budget_item = utils.parse_json(json_data=budget_item, schema=BudgetItemSchema())
         with db.connect() as conn:
             result = conn.execute(
@@ -116,7 +118,10 @@ def update(id: int):
                 )
             )
             conn.commit()
-        return {"status": HTTPStatus.OK, "result": BudgetItemSchema().dump(result.last_updated_params())}
+        return {
+            "status": HTTPStatus.OK,
+            "result": BudgetItemSchema().dump(result.last_updated_params()),
+        }
     elif request.method == "DELETE":
         if budget_item["result"]:
             with db.connect() as conn:
