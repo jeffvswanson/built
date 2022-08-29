@@ -38,12 +38,35 @@ Proof of concept Built Budget API - **DO NOT USE IN PRODUCTION!**
 # Runbook
 ## Installation
 
+1. Clone the Built API git repository from https://github.com/jeffvswanson/built
+2. Assuming python 3.9 is installed.
+3. From the `./built` directory
+4. Run `pipenv sync`
+5. Check installation with `pipenv run pytest ./tests/unit`
+
 ## Stand Up System
+
+1. From the `./built` directory
+2. Run `docker compose up --build`
+3. Watch the services stand up.
+4. If the system is being stood up for the first time or the local volume mount for the MySQL database was destroyed and rebuilt, perform an Alembic migration to populate the database with the table definitions with:  
+    ```shell
+    pipenv run alembic upgrade head
+    ```
+
+## Monitoring
+
+`adminer` allows investigation of the MySQL database running in the docker compose network.  
+The `adminer` interface can be accessed from a browser at http://localhost:8080 with appropriate credentials.
 
 ## Tear Down System
 
+1. From the `./built` directory
+2. Run `docker compose down` or `docker compose down --volumes` to get rid of the database local file storage volume.
 
 # Improvements
+## Performance
+- Study use of async functions when making network calls to the database/localstack
 ## API
 ### Get All
 - Could use a limit/paginator
@@ -53,3 +76,6 @@ Proof of concept Built Budget API - **DO NOT USE IN PRODUCTION!**
 - Consider a batch delete
 ### Update
 - Consider a batch update
+
+## Testing
+- Create a functional test environment to run commands against an existing database backend.
