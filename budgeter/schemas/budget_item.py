@@ -39,18 +39,17 @@ class BudgetItemSchema(Schema):
             error="Only inflow, '+', or outflow, '-', permitted.",
         ),
     )
-
-    payor = fields.Str(required=True, allow_none=False)
-    payee = fields.Str(required=True, allow_none=False)
+    payor_id = fields.Str(required=True, allow_none=False)
+    payee_id = fields.Str(required=True, allow_none=False)
     transaction_date = fields.AwareDateTime(
         format="iso",
         default_timezone=pytz.UTC,
         allow_none=False,
-        dump_default=datetime.datetime.now(pytz.UTC).isoformat(),
+        load_default=datetime.datetime.now(pytz.UTC).isoformat(),
     )
 
     @pre_load
-    def find_payee_ids(self, data, **kwargs) -> dict:
+    def find_payee_ids(self, data: dict, **kwargs) -> dict:
         """
         find_payee_ids attempts to match the provided payor/payee names with an existing
         value in the payee database table. If the name(s) cannot be found, then the
@@ -58,7 +57,7 @@ class BudgetItemSchema(Schema):
 
         Returns
         -------
-        dict
+        dict : dict
             Dictionary containing the attribute names of BudgetItemSchema as keys with
             its attribute values as the values.
         """
