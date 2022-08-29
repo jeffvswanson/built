@@ -15,4 +15,8 @@ build/
 
 .vscode/
 
+# MySQL database local storage
 db-data/
+
+# Localstack volume directory
+volume/
