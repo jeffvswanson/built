@@ -42,7 +42,7 @@ Proof of concept Built Budget API - **DO NOT USE IN PRODUCTION!**
 2. Assuming python 3.9 is installed.
 3. From the `./built` directory
 4. Run `pipenv sync`
-5. Check installation with `pipenv run pytest ./tests/unit`
+5. Check installation with `pipenv run python -m pytest ./tests/`
 
 ## Stand Up System
 
@@ -78,4 +78,6 @@ The `adminer` interface can be accessed from a browser at http://localhost:8080 
 - Consider a batch update
 
 ## Testing
+- Add a more robust set of unit tests, e.g., utilize property based testing with hypothesis.
+- Higher test coverage for more edge cases/error conditions.
 - Create a functional test environment to run commands against an existing database backend.
