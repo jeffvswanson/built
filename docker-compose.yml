@@ -7,7 +7,6 @@ services:
      - "5000:5000"
     depends_on:
       - db
-      - localstack
     links:
       - db
     environment:
@@ -29,7 +28,7 @@ services:
       - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
       - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # only required for Pro
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - AWS_REGION=us-east-2
+      - KINESIS_LATENCY=0
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
