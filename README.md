@@ -59,6 +59,16 @@ Proof of concept Built Budget API - **DO NOT USE IN PRODUCTION!**
 `adminer` allows investigation of the MySQL database running in the docker compose network.  
 The `adminer` interface can be accessed from a browser at http://localhost:8080 with appropriate credentials.
 
+
+## AWS Kinesis
+
+1. With the steps from [Stand Up System](#stand-up-system) complete.
+2. While in the `built` directory.
+3. Run the AWS Kinesis example with
+    ```shell
+    pipenv run python -m kinesis_example
+    ```
+
 ## Tear Down System
 
 1. From the `./built` directory

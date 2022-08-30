@@ -7,15 +7,21 @@ import time
 import boto3
 from botocore.exceptions import ClientError
 
+# Credentials for Localstack
+ACCESS_KEY = "test"
+AWS_SECRET_ACCESS_KEY = "test"
 AWS_REGION = "us-east-2"
 AWS_PROFILE = "localstack"
 LOCALSTACK_ENDPOINT = "http://localhost:4566"
 
 
 def main():
-    boto3.setup_default_session(profile_name=AWS_PROFILE)
     client = boto3.client(
-        "kinesis", region_name=AWS_REGION, endpoint_url=LOCALSTACK_ENDPOINT
+        "kinesis",
+        aws_access_key_id=ACCESS_KEY,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+        region_name=AWS_REGION,
+        endpoint_url=LOCALSTACK_ENDPOINT,
     )
     stream_name = "my_stream"
 
