@@ -11,6 +11,7 @@ marshmallow = "*"
 "ruamel.yaml" = "*"
 mysqlclient = "*"
 pytz = "*"
+boto3 = "*"
 
 [dev-packages]
 pytest = "*"
