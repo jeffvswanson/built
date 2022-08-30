@@ -32,7 +32,7 @@ class BudgetItemSchema(Schema):
         ),
     )
     flow = fields.Str(
-        default="-",
+        dump_default="-",
         validate=validate.OneOf(
             choices=["+", "-"],
             labels=["Inflow", "Outflow"],
